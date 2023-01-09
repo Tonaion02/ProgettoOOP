@@ -1,13 +1,14 @@
 package Multiplex;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  Class to generate and handle tickets of the Multiplex
  */
-public class TicketOffice {
-	
+public class TicketOffice implements Serializable {
+	private static final long serialVersionUID = 8085697820860729057L;
 	/**
 	  Construct the TicketOffice
 	 */
@@ -17,25 +18,6 @@ public class TicketOffice {
 		discounts = new ArrayList<>();
 //		activeDiscounts = new ArrayList<>();
 	}
-	
-//	/**
-//	  Activate one of the discount, add the discount to the collection of active discounts
-//	  @param discount is the discount that we want to add to the list
-//	 */
-//	public void activeDiscount(Discount discount) {
-//		activeDiscounts.add(discount);
-//	}
-//	
-//	/**
-//	  Deactivate one of the discount, remove the discount to the collection of active discounts 
-//	  @param discount is the discount that we want to remove from list
-//	 */
-//	public void deactivateDiscount(Discount discount) {
-//		for(int i=0;i<activeDiscounts.size();i++) {
-//			if(activeDiscounts.get(i) == discount)
-//				activeDiscounts.remove(i);
-//		}
-//	}
 	
 	/**
 	 * Add a discount to the list of the discount 

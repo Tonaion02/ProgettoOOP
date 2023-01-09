@@ -1,10 +1,13 @@
 package Multiplex;
 
+import java.io.Serializable;
+
 /**
  * The Discount class is an abstract class that permit to apply a discount to the cost of the show
  * and to compute the discounted price of the ticket
  */
-public abstract class Discount {
+public abstract class Discount implements Serializable {
+	private static final long serialVersionUID = 2818164087122726952L;
 	/**
 	 * Constructs discount from the percent of discount
 	 * @param percent is the quantity of discount

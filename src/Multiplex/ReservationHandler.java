@@ -1,13 +1,15 @@
 package Multiplex;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Handle the reservations
  */
-public class ReservationHandler {
-	
+public class ReservationHandler implements Serializable {
+	private static final long serialVersionUID = 4355305844034035582L;
+
 	/**
 	 * Constructs ReservationHandler
 	 */

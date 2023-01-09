@@ -1,14 +1,15 @@
 package Multiplex;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 /**
  * The class represents the concept of program of the week
  */
-public class WeekProgram {
-	
+public class WeekProgram implements Serializable {
+	private static final long serialVersionUID = -3767903385695428281L;
+
 	/**
 	 * Constuct a empty week program
 	 */
@@ -21,7 +22,7 @@ public class WeekProgram {
 	 * @param criterionOfFilter criterion to filter the shows
 	 * @return list of shows filtered by a criterion
 	 */
-	public List<Show> filterShowForCriterion(Predicate<Show> criterionOfFilter) {
+	public List<Show> filterShowForCriterion(ProgramFilter criterionOfFilter) {
 		return shows.stream().filter(criterionOfFilter).toList();
 	}
 	

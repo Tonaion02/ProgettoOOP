@@ -1,10 +1,12 @@
 package Multiplex;
 
+import java.io.Serializable;
+
 /**
  * The class rappresent the reservation concept
  */
-public class Reservation {
-	
+public class Reservation implements Serializable {
+	private static final long serialVersionUID = 1L;
 	/**
 	 * Constructs a reservation from 
 	 * @param idClient id of the client that created the reservation

@@ -1,13 +1,14 @@
 package Multiplex;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * The class rappresent the show concept
  */
-public class Show {
-	
+public class Show implements Serializable {
+	private static final long serialVersionUID = 68217500247298879L;
 	/**
 	 * Constructs the show with the film, the price, the hall and the day
 	 * @param film the film that is screened in this show

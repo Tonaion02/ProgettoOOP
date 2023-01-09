@@ -1,7 +1,9 @@
 package Multiplex;
 
-public class Ticket {
-	
+import java.io.Serializable;
+
+public class Ticket implements Serializable {
+	private static final long serialVersionUID = 572478323850917103L;
 	/**
 	 * Constructs Ticket from effectivePrice, idClient and the show
 	 * @param effectivePrice the effective price calculated for the ticket

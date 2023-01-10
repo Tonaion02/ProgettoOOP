@@ -1,6 +1,7 @@
 package Multiplex;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +60,18 @@ public class ReservationHandler implements Serializable {
 	 */
 	public List<Reservation> getReservations() {
 		return reservations;
+	}
+	
+	/**
+	 * Delete all the expired resevation from the system
+	 * @param currentDateTime
+	 */
+	public void deleteExpiredReservation(LocalDateTime currentDateTime) {
+		for(int i=0;i<reservations.size();i++) {
+			Reservation r = reservations.get(i);
+			if(r.isExpired(currentDateTime))
+				reservations.remove(i);
+		}
 	}
 	
 	private List<Reservation> reservations;

@@ -1,6 +1,7 @@
 package Multiplex;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * The class rappresent the reservation concept
@@ -17,12 +18,10 @@ public class Reservation implements Serializable {
 		this.idClient = idClient;
 		this.show = show;
 		this.numberOfSeat = numberOfSeat;
-		
-		//SELECT THE SEAT @@@@@@@@@@@
 	}
 	
 	/**
-	 * 
+	 * Get the id of the Client
 	 * @return the id of the Client
 	 */
 	public int getIdClient() {
@@ -30,7 +29,7 @@ public class Reservation implements Serializable {
 	}
 	
 	/**
-	 * 
+	 * Get the show that the reservation regard
 	 * @return the show that the reservation regard
 	 */
 	public Show getShow() {
@@ -38,11 +37,20 @@ public class Reservation implements Serializable {
 	}
 
 	/**
-	 * 
+	 * Get the number of seat of this reservation
 	 * @return the number of seat of this reservation
 	 */
 	public int getNumberOfSeat() {
 		return numberOfSeat;
+	}
+	
+	/**
+	 * Controll if the reservation is expired
+	 * @param currentTime the current local date time
+	 * @return true if the reservation is expired false in other case
+	 */
+	public boolean isExpired(LocalDateTime currentTime) {
+		return currentTime.plusHours(12).compareTo(show.getDate()) > 0;
 	}
 
 	private int numberOfSeat;

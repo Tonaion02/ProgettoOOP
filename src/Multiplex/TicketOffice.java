@@ -16,7 +16,6 @@ public class TicketOffice implements Serializable {
 		tickets = new ArrayList<>();
 		
 		discounts = new ArrayList<>();
-//		activeDiscounts = new ArrayList<>();
 	}
 	
 	/**

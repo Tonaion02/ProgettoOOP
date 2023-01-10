@@ -16,7 +16,7 @@ public class ListerSelectable<T> extends JPanel {
 		public Selection(T selectableObject) {
 			super(selectableObject.toString());
 			
-			this.selectableObject = selectableObject;
+			//this.selectableObject = selectableObject;
 			
 			this.addActionListener(new ActionListener() {
 				@Override
@@ -26,24 +26,28 @@ public class ListerSelectable<T> extends JPanel {
 			});
 		}
 		
-		@SuppressWarnings("unused")
-		private T selectableObject;
+//		@SuppressWarnings("unused")
+//		private T selectableObject;
 	}
 	
-	public ListerSelectable(List<T> selects) {
-		this.setLayout(new GridLayout(selects.size(), 1));
-		
+	public ListerSelectable(List<T> options) {
 		selected = null;
-		
 		selections = new ArrayList<>();
-		for(T t : selects) {
+		
+		setSetOfOptions(options);
+	}
+	
+	private void setSetOfOptions(List<T> options) {
+		this.setLayout(new GridLayout(options.size(), 1));
+		
+		for(T t : options) {
 			Selection selection = new Selection(t);
 			selections.add(selection);
 			this.add(selection);
 		}
 	}
 	
-	public T getSelected() throws Exception {
+	public T getSelected() throws NotSelectedItemException {
 		if(selected == null)
 			throw new NotSelectedItemException();
 			

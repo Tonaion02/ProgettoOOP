@@ -14,8 +14,8 @@ public class Hall implements Serializable {
 	 * @param numberOfSeats the number of seats of the hall
 	 * @param name the name of the hall
 	 */
-	public Hall(String name, int numberOfSeats, int numberOfSeatsH) {
-		this.name = name;
+	public Hall(int numberOfHall, int numberOfSeats, int numberOfSeatsH) {
+		this.numberOfHall = numberOfHall;
 		this.numberOfSeatsH = numberOfSeatsH;
 		System.out.println(this.numberOfSeatsH);
 		
@@ -26,7 +26,7 @@ public class Hall implements Serializable {
 	}
 	
 	/**
-	 * 
+	 * The method set the state of the seat(Available/Unavailable) identified by the number of seat
 	 * @param numberOfSeat the number of seat that we want to change the state
 	 * @param state the state that we want to set for the seat
 	 */
@@ -35,16 +35,16 @@ public class Hall implements Serializable {
 	}
 	
 	/**
-	 * 
+	 * The method return the state of the seat(Available/Unavailable) identified by the number of seat
 	 * @param numberOfSeat the number of seat that we want to see the state
-	 * @return the state of the seat
+	 * @return the state of the seat(Available/Unavailable)
 	 */
 	public StateSeat getStateSeat(int numberOfSeat) {
 		return seats.get(numberOfSeat);
 	}
 	
 	/**
-	 * 
+	 * The method return the number of seats
 	 * @return the number of the seat that is present in the hall
 	 */
 	public int getNumberOfSeats() {
@@ -52,11 +52,11 @@ public class Hall implements Serializable {
 	}
 	
 	/**
-	 * 
-	 * @return the name of the hall
+	 * The method return the number of the hall
+	 * @return the number of the hall
 	 */
-	public String getName() {
-		return name;
+	public int getNumberOfHall() {
+		return numberOfHall;
 	}
 	
 	/**
@@ -68,6 +68,6 @@ public class Hall implements Serializable {
 	}
 	
 	private List<StateSeat> seats; 
-	private String name;
+	private int numberOfHall;
 	private int numberOfSeatsH; 
 }

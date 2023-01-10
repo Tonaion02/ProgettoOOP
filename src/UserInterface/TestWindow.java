@@ -11,8 +11,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.swing.*;
 
@@ -22,20 +26,20 @@ import Multiplex.SeatNotAvailable;
 import Multiplex.Show;
 import Multiplex.StateReservableSeat;
 
-
-
 public class TestWindow extends JFrame{  
-    public static void main(String[] args) {  
+	private static final long serialVersionUID = 618549544185941581L;
+
+	public static void main(String[] args) {  
 		int idClient = 0;
 		
 		Multiplex multiplex = null;
 		File file = new File("data/Multiplex.dat");
 		
-		if(!file.exists())
+		if(!file.exists() || true)
 		{
 			multiplex = new Multiplex();
 			
-			List<Show> shows = multiplex.getWeekProgram().filterShowForCriterion(s -> true);
+			List<Show> shows = multiplex.getWeekProgramFilters().get(0).filter(multiplex.getWeekProgram().getShows());
 			Show show = shows.get(0);
 			System.out.println(show);
 			
@@ -60,13 +64,14 @@ public class TestWindow extends JFrame{
 			}
 		}
 		
-		List<Show> showForFilm1 = multiplex.getWeekProgram().filterShowForCriterion(multiplex.getWeekProgramFilters().get(0));
+//		List<Show> showForFilm1 = multiplex.getWeekProgram().filterShowForCriterion(multiplex.getWeekProgramFilters().get(0));
+		List<Show> showForFilm1 = multiplex.getWeekProgram().getShows();
 		for(Show s : showForFilm1) {
 			System.out.println(s);
 		}
 		
 		try {
-			List<Show> shows = multiplex.getWeekProgram().filterShowForCriterion(s -> true);
+			List<Show> shows = multiplex.getWeekProgram().getShows();
 			Show show = shows.get(0);
 			multiplex.getTicketOffice().buyTicket(idClient, show, 1);
 			
@@ -77,7 +82,7 @@ public class TestWindow extends JFrame{
 		}
 		
 		try {
-			List<Show> shows = multiplex.getWeekProgram().filterShowForCriterion(s -> true);
+			List<Show> shows = multiplex.getWeekProgram().getShows();
 			Show show = shows.get(0);
 			multiplex.getReservationHandler().createReservation(idClient, show, 1);
 		} catch (SeatNotAvailable e) {
@@ -93,19 +98,43 @@ public class TestWindow extends JFrame{
     	JPanel rightPanel = new JPanel();
     	JPanel leftPanel = new JPanel();
     	
-//    	//TEST HALLVIEW
+//////    	//TEST HALLVIEW
 //		List<Show> shows = multiplex.getWeekProgram().filterShowForCriterion((s) -> true);
 //		HallView hv = new HallView(shows.get(0), window, multiplex.getTicketOffice()::buyTicket);
 //		window.add(hv);
-//    	//TEST HALLVIEW
+//////    	//TEST HALLVIEW
 		
 		//TEST LISTERSELECTABLE
-    	List<String> strings = Arrays.asList("antonio","antonio","antonio","antonio","antonio","antonio","antonio","antonio","antonio","antonio","antonio",
-    			"antonio","antonio","antonio","antonio","antonio","antonio","antonio","antonio","antonio","antonio","antonio","antonio","antonio","antonio","antonio",
-    			"antonio","antonio","antonio","filippo");
-		ListerSelectable<String> listerShow = new ListerSelectable<>(strings);
-		window.add(new JScrollPane(listerShow));
+//    	List<String> strings = Arrays.asList("antonio","antonio","antonio","antonio","antonio","antonio","antonio","antonio","antonio","antonio","antonio",
+//    			"antonio","antonio","antonio","antonio","antonio","antonio","antonio","antonio","antonio","antonio","antonio","antonio","antonio","antonio","antonio",
+//    			"antonio","antonio","antonio","filippo");
+//		ListerSelectable<String> listerShow = new ListerSelectable<>(strings);
+//		window.add(new JScrollPane(listerShow));
 		//TEST LISTERSELECTABLE
+		
+    	class EmptyState extends State {
+
+			public EmptyState(Window window) {
+				super(window);
+				
+				this.add(new JLabel("WEWE"));
+			}
+
+			@Override
+			public void load() {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void unLoad() {
+				// TODO Auto-generated method stub
+				
+			}
+    		
+    	}
+		StateSelectMode stateSelectMode = new StateSelectMode(window, new ClientState(window), new EmptyState(window));
+		window.loadState(stateSelectMode);
 		
 		try {
 			window.update();

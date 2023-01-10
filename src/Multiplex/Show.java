@@ -3,6 +3,8 @@ package Multiplex;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 
 /**
  * The class rappresent the show concept
@@ -10,16 +12,18 @@ import java.util.List;
 public class Show implements Serializable {
 	private static final long serialVersionUID = 68217500247298879L;
 	/**
-	 * Constructs the show with the film, the price, the hall and the day
+	 * Constructs the show with the title, film, the price, the hall and the date
+	 * @param title the title of the show
 	 * @param film the film that is screened in this show
 	 * @param fullPriceTicket the full price of the ticket
 	 * @param hall the hall where is taken the projection
-	 * @param day the day of the projection
+	 * @param date of the show
 	 */
-	public Show(String film, double fullPriceTicket, Hall hall, DayOfWeek day) {
+	public Show(String title, String film, double fullPriceTicket, Hall hall, LocalDateTime date) {
+		this.title = title;
 		this.film = film;
 		this.fullPriceTicket = fullPriceTicket;
-		this.day = day;
+		this.date = date;
 		this.hall = hall;
 		
 		this.reservableSeats = new ArrayList<>();
@@ -28,7 +32,7 @@ public class Show implements Serializable {
 	}
 	
 	/**
-	 * 
+	 * The method return the full price of the ticket
 	 * @return the full price of the ticket
 	 */
 	public double getFullPriceTicket() {
@@ -44,27 +48,27 @@ public class Show implements Serializable {
 	}
 	
 	/**
-	 * 
-	 * @return day of the week when the show is projected
+	 * The method return the date of the show
+	 * @return data of projection of the show
 	 */
-	public DayOfWeek getDay() {
-		return day;
+	public LocalDateTime getDate() {
+		return date;
 	}
 	
 	/**
-	 * Set the day of the week
-	 * @param day
-	 */
-	public void setDay(DayOfWeek day) {
-		this.day = day;
-	}
-	
-	/**
-	 * 
+	 * The method return the film that is projected in this show
 	 * @return film that is projected in this show
 	 */
 	public String getFilm() {
 		return film;
+	}
+	
+	/**
+	 * The method that return the title of the film
+	 * @return
+	 */
+	public String getTitle() {
+		return title;
 	}
 	
 	/**
@@ -85,7 +89,7 @@ public class Show implements Serializable {
 	}
 
 	/**
-	 * 
+	 * Get the state of the seat identified by a number of a seat
 	 * @param numberOfSeat the identifier of a seat
 	 * @return state of the selected seat
 	 */
@@ -94,6 +98,7 @@ public class Show implements Serializable {
 	}
 	
 	/**
+	 * Get the reference to the hall where the show is projected
 	 * @return Hall of the projection
 	 */
 	public Hall getHall() {
@@ -103,6 +108,7 @@ public class Show implements Serializable {
 	private String film;
 	private double fullPriceTicket;
 	private List<StateReservableSeat> reservableSeats;
-	private DayOfWeek day;
 	private Hall hall;
+	private LocalDateTime date;
+	private String title;
 }

@@ -1,9 +1,13 @@
 package Multiplex;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -20,16 +24,26 @@ public class Multiplex implements Serializable{
 		films = Arrays.asList("Film1", "Film2", "Film3");
 		
 		halls = new ArrayList<>();
-		halls.add(new Hall("Sala1", 30, 5));
-		halls.add(new Hall("Sala2", 50, 7));
+		halls.add(new Hall(0, 30, 5));
+		halls.add(new Hall(1, 50, 7));
 		
 		weekProgram = new WeekProgram();
-		weekProgram.insertShowInProgram(new Show(films.get(0), 34.5f, this.getHall("Sala2"), DayOfWeek.Monday));
-		weekProgram.insertShowInProgram(new Show(films.get(0), 34.5f, halls.get(0), DayOfWeek.Tuesday));
-		weekProgram.insertShowInProgram(new Show(films.get(2), 34.5f, halls.get(1), DayOfWeek.Thursday));
+		weekProgram.insertShowInProgram(new Show("Show1", films.get(0), 34.5f, this.getHall(0), LocalDateTime.now().plusDays(5)));
+		weekProgram.insertShowInProgram(new Show("Show2", films.get(0), 34.5f, halls.get(1), LocalDateTime.now()));
+		weekProgram.insertShowInProgram(new Show("Show3", films.get(2), 34.5f, halls.get(0), LocalDateTime.now()));
 		
 		weekProgramFilters = new ArrayList<>();
-		weekProgramFilters.add((s) -> s.getFilm().equals("Film1"));
+		weekProgramFilters.add(new ProgramFilter() {
+			private static final long serialVersionUID = 2706478179287181612L;
+
+			@Override
+			public List<Show> filter(List<Show> shows) {
+				Function<? super Show, ? extends Integer> f = (s) -> {return s.getHall().getNumberOfHall();};
+				Map<Integer, List<Show>> grouping = shows.stream().collect(Collectors.groupingBy(f));
+				List<Show> l = grouping.entrySet().stream().map((e) -> e.getValue()).flatMap((list) -> list.stream()).toList();
+				return l;
+			}
+		});
 		
 		ticketOffice = new TicketOffice();
 		
@@ -40,8 +54,8 @@ public class Multiplex implements Serializable{
 		reservationHandler = new ReservationHandler();
 	}
 	
-	public Hall getHall(final String name) {
-		return halls.stream().filter(h -> h.getName().equals(name)).findAny().get();
+	public Hall getHall(final int numberOfHall) {
+		return halls.stream().filter(h -> h.getNumberOfHall() == numberOfHall).findAny().get();
 	}
 	
 	public List<String> getFilms() {
@@ -82,9 +96,4 @@ public class Multiplex implements Serializable{
 	private TicketOffice ticketOffice;
 	private ReservationHandler reservationHandler;
 	private WeekProgram weekProgram;
-	
-	//TESTING
-	public static void main(String[] args) {
-
-	}
 }

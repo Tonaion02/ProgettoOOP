@@ -17,14 +17,14 @@ public class WeekProgram implements Serializable {
 		shows = new ArrayList<>();
 	}
 	
-	/**
-	 * 
-	 * @param criterionOfFilter criterion to filter the shows
-	 * @return list of shows filtered by a criterion
-	 */
-	public List<Show> filterShowForCriterion(ProgramFilter criterionOfFilter) {
-		return shows.stream().filter(criterionOfFilter).toList();
-	}
+//	/**
+//	 * 
+//	 * @param criterionOfFilter criterion to filter the shows
+//	 * @return list of shows filtered by a criterion
+//	 */
+//	public List<Show> filterShowForCriterion(ProgramFilter criterionOfFilter) {
+//		return shows.stream().filter(criterionOfFilter).toList();
+//	}
 	
 	/**
 	 * Method to insert a show in the week program
@@ -32,6 +32,10 @@ public class WeekProgram implements Serializable {
 	 */
 	public void insertShowInProgram(Show show) {
 		shows.add(show);
+	}
+	
+	public List<Show> getShows() {
+		return shows;
 	}
 	
 	private List<Show> shows;

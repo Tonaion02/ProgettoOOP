@@ -4,10 +4,14 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import Utility.Time;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -27,13 +31,26 @@ public class Multiplex implements Serializable{
 		halls.add(new Hall(0, 30, 5));
 		halls.add(new Hall(1, 50, 7));
 		
-		weekProgram = new WeekProgram();
-		weekProgram.insertShowInProgram(new Show("Show1", films.get(0), 34.5f, this.getHall(0), LocalDateTime.now().plusDays(5)));
-		weekProgram.insertShowInProgram(new Show("Show2", films.get(0), 34.5f, halls.get(1), LocalDateTime.now()));
-		weekProgram.insertShowInProgram(new Show("Show3", films.get(2), 34.5f, halls.get(0), LocalDateTime.now()));
+		shows = new ArrayList<>();
+		shows.add(new Show("Show1", "Film1", 24.0f, this.getHall(0), Time.getCurrentTime().plusDays(5)));
+		shows.add(new Show("Show2", "Film3", 24.0f, this.getHall(1), Time.getCurrentTime()));
+		shows.add(new Show("Show3", "Film1", 24.0f, this.getHall(0), Time.getCurrentTime()));
 		
-		weekProgramFilters = new ArrayList<>();
-		weekProgramFilters.add(new ProgramFilter() {
+//		programFormatters = new ArrayList<>();
+//		programFormatters.add(new ProgramFormatter() {
+//			private static final long serialVersionUID = 2706478179287181612L;
+//
+//			@Override
+//			public List<Show> filter(List<Show> shows) {
+//				Function<? super Show, ? extends Integer> f = (s) -> {return s.getHall().getNumberOfHall();};
+//				Map<Integer, List<Show>> grouping = shows.stream().collect(Collectors.groupingBy(f));
+//				List<Show> l = grouping.entrySet().stream().map((e) -> e.getValue()).flatMap((list) -> list.stream()).toList();
+//				return l;
+//			}
+//		});
+
+		programFormatters = new HashMap<>();
+		programFormatters.put("ForHall", new ProgramFormatter() {
 			private static final long serialVersionUID = 2706478179287181612L;
 
 			@Override
@@ -54,12 +71,38 @@ public class Multiplex implements Serializable{
 		reservationHandler = new ReservationHandler();
 	}
 	
+	public void setStateSeat(final int numberOfHall, int numberOfSeat, StateSeat state) {
+		Hall hall = getHall(numberOfHall);
+		hall.setStateSeat(numberOfSeat, state);
+	}
+	
+	public StateSeat getStateSeat(final int numberOfHall, int numberOfSeat) {
+		Hall hall = getHall(numberOfHall);
+		return hall.getStateSeat(numberOfSeat);
+	}
+	
 	public Hall getHall(final int numberOfHall) {
 		return halls.stream().filter(h -> h.getNumberOfHall() == numberOfHall).findAny().get();
 	}
 	
 	public List<String> getFilms() {
 		return films;
+	}
+
+	public List<Show> getShows() {
+		return shows;
+	}
+	
+	public void insertIntoProgram(Show s) {
+		shows.add(s);
+	}
+	
+	public Map<String, ProgramFormatter> getProgramFormatters() {
+		return programFormatters;
+	}
+	
+	public ProgramFormatter getProgramFormatter(String identifier) {
+		return programFormatters.get(identifier);
 	}
 	
 	public TicketOffice getTicketOffice() {
@@ -70,30 +113,10 @@ public class Multiplex implements Serializable{
 		return reservationHandler;
 	}
 	
-	public WeekProgram getWeekProgram() {
-		return weekProgram;
-	}
-	
-	public List<ProgramFilter> getWeekProgramFilters() {
-		return weekProgramFilters;
-	}
-	
-	public void save() {
-		try {
-			ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(new File("data/Multiplex.dat")));
-			output.writeObject(this);
-			output.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
+	private List<Show> shows;
 	private List<String> films;
 	private List<Hall> halls;
-	private List<ProgramFilter> weekProgramFilters; 
+	private Map<String, ProgramFormatter> programFormatters;
 	private TicketOffice ticketOffice;
 	private ReservationHandler reservationHandler;
-	private WeekProgram weekProgram;
 }

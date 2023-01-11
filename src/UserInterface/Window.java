@@ -9,16 +9,16 @@ import java.time.LocalDateTime;
 
 import javax.swing.*;
 
+import Multiplex.Archive;
 import Multiplex.Multiplex;
 
 public class Window extends JFrame {
 	private static final long serialVersionUID = -897675181702202733L;
 	
-	public Window(Multiplex multiplex) {
+	public Window(Multiplex multiplex, Archive archive) {
 		//Common part
 		this.multiplex = multiplex;
-		
-		currentDateTime = LocalDateTime.now();
+		this.archive = archive;
 		
 		//Common part
 		
@@ -80,18 +80,14 @@ public class Window extends JFrame {
 	}
 
 	private void onClose() {
-		multiplex.save();
+		archive.save();
 	}
 
 	public Multiplex getMultiplex() {
 		return multiplex;
 	}
 	
-	public LocalDateTime getCurrentDateTime() {
-		return currentDateTime;
-	}
-	
 	private State currentState;
-	private LocalDateTime currentDateTime;
 	private Multiplex multiplex;
+	private Archive archive; 
 }

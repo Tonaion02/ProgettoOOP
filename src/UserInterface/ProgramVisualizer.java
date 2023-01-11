@@ -12,14 +12,15 @@ import java.time.temporal.ChronoUnit;
 import javax.swing.*;
 
 import Multiplex.*;
-import Multiplex.ProgramFilter;
+import Multiplex.ProgramFormatter;
 import Multiplex.Show;
+import Utility.Time;
 
 public class ProgramVisualizer extends State {
 	private static final long serialVersionUID = 2711349097130480705L;
 
 	public class LoadOnPress implements ActionListener {
-		public LoadOnPress(ProgramFilter filter) {
+		public LoadOnPress(ProgramFormatter filter) {
 			this.filter = filter;
 		}
 		
@@ -29,12 +30,11 @@ public class ProgramVisualizer extends State {
 			try {
 				ProgramVisualizer.this.window.update();
 			} catch (CurrentStateNotAvailable e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		}	
 		
-		private ProgramFilter filter;
+		private ProgramFormatter filter;
 	}
 	
 	public ProgramVisualizer(Window window) {
@@ -54,7 +54,7 @@ public class ProgramVisualizer extends State {
 		group.add(programForWeek);
 		group.setSelected(programForWeek.getModel(), true);
 		
-		class ProgramFilterForWeek implements ProgramFilter {
+		class ProgramFilterForWeek implements ProgramFormatter {
 			private static final long serialVersionUID = 1L;
 			
 			@Override
@@ -63,11 +63,11 @@ public class ProgramVisualizer extends State {
 				List<Show> l = new ArrayList<>();
 				
 				for(Show s : shows) {
-					int diff = window.getCurrentDateTime().getDayOfWeek().compareTo(DayOfWeek.MONDAY);
+					int diff = Time.getCurrentTime().getDayOfWeek().compareTo(DayOfWeek.MONDAY);
 					System.out.println(diff);
-					LocalDateTime startOfWeek = window.getCurrentDateTime().truncatedTo(ChronoUnit.DAYS).minusDays(diff);
-					diff = window.getCurrentDateTime().getDayOfWeek().compareTo(DayOfWeek.SUNDAY);
-					LocalDateTime endOfWeek = window.getCurrentDateTime().truncatedTo(ChronoUnit.DAYS).plusDays(-diff);
+					LocalDateTime startOfWeek = Time.getCurrentTime().truncatedTo(ChronoUnit.DAYS).minusDays(diff);
+					diff = Time.getCurrentTime().getDayOfWeek().compareTo(DayOfWeek.SUNDAY);
+					LocalDateTime endOfWeek = Time.getCurrentTime().truncatedTo(ChronoUnit.DAYS).plusDays(-diff);
 					
 					if(s.getDate().compareTo(startOfWeek) >= 0 && s.getDate().compareTo(endOfWeek) <= 0)
 						l.add(s);
@@ -77,22 +77,23 @@ public class ProgramVisualizer extends State {
 			}
 
 		}
-		window.getMultiplex().getWeekProgramFilters().add(new ProgramFilterForWeek());
-		selectedFilter = window.getMultiplex().getWeekProgramFilters().get(1);
-		programForWeek.addActionListener(new LoadOnPress(window.getMultiplex().getWeekProgramFilters().get(1)));
+		window.getMultiplex().getProgramFormatters().put("ForWeek", new ProgramFilterForWeek());
+		selectedFilter = window.getMultiplex().getProgramFormatter("ForWeek");
+		programForWeek.addActionListener(new LoadOnPress(window.getMultiplex().getProgramFormatter("ForWeek")));
 		
 		JRadioButton programForHall = new JRadioButton("Programma per sale");
 		northPanel.add(programForHall);
 		group.add(programForHall);
-		programForHall.addActionListener(new LoadOnPress(window.getMultiplex().getWeekProgramFilters().get(0)));
+		programForHall.addActionListener(new LoadOnPress(window.getMultiplex().getProgramFormatter("ForHall")));
 	}
 	
-	private void printShows(ProgramFilter filter) {
+	private void printShows(ProgramFormatter filter) {
 		Multiplex multiplex = window.getMultiplex();
 		
-		List<Show> showsToPrint = filter.filter(multiplex.getWeekProgram().getShows());
-		for(Show s : showsToPrint) {
-			area.setText(area.getText() + s.getTitle() + "\n");
+		List<Show> showsToPrint = filter.filter(multiplex.getShows());
+		List<String> output = filter.format(showsToPrint);
+		for(var s : output) {
+			area.setText(area.getText() + s + "\n");
 		}
 	}
 	
@@ -108,5 +109,5 @@ public class ProgramVisualizer extends State {
 	
 	private JTextArea area;
 	private ButtonGroup group;
-	private ProgramFilter selectedFilter;
+	private ProgramFormatter selectedFilter;
 }

@@ -18,13 +18,13 @@ public class ClientState extends State {
 		System.out.println(myFormatObj.format(local));
 		System.out.println(myFormatObj.format(local.minusHours(12)));
 		
-		JMenuBar menuBar = new JMenuBar();
-		this.add(menuBar, BorderLayout.NORTH);
+		State programVisualizer = new ProgramVisualizer(this.window);
+		State reservationState = new ReservationState(this.window);
 		
-		menuBar.add(new ChangePanelButton("Visualizza lista spettacoli", this.window, new ProgramVisualizer(this.window)));
-		menuBar.add(new ChangePanelButton("Effettua Prenotazione", this.window, null));
-		menuBar.add(new ChangePanelButton("Cancella una prenotazione", this.window, null));
-		menuBar.add(new ChangePanelButton("Acquista biglietto", this.window, null));
+		JMenuBar menuBar = createClientMenuBar(programVisualizer, reservationState, null, null);
+		this.add(menuBar, BorderLayout.NORTH);
+		programVisualizer.add(createClientMenuBar(programVisualizer, reservationState, null, null), BorderLayout.NORTH);
+		reservationState.add(createClientMenuBar(programVisualizer, reservationState, null, null), BorderLayout.NORTH);
 		
 		//MAGARI VISUALIZZA PRENOTAZIONI E BIGLIETTI SOTTO
 	}
@@ -34,4 +34,15 @@ public class ClientState extends State {
 
 	@Override
 	public void unLoad() {}
+	
+	private JMenuBar createClientMenuBar(State programVisualizer, State reservationState, State newReservationState, State buyTicketState) {
+		JMenuBar menuBar = new JMenuBar();
+		
+		menuBar.add(new ChangePanelButton("Visualizza spettacoli", this.window, programVisualizer));
+		menuBar.add(new ChangePanelButton("Prenotazioni", this.window, reservationState));
+		menuBar.add(new ChangePanelButton("Nuova prenotazione", this.window, newReservationState));
+		menuBar.add(new ChangePanelButton("Acquista biglietto", this.window, buyTicketState));
+		
+		return menuBar;
+	}
 }

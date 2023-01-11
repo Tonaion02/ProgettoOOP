@@ -20,6 +20,7 @@ import java.util.function.Function;
 
 import javax.swing.*;
 
+import Multiplex.Archive;
 import Multiplex.Multiplex;
 import Multiplex.SeatAlreadyTaken;
 import Multiplex.SeatNotAvailable;
@@ -34,16 +35,17 @@ public class TestWindow extends JFrame{
 		
 		Multiplex multiplex = null;
 		File file = new File("data/Multiplex.dat");
+		Archive archive = new Archive(file);
 		
 		if(!file.exists() || true)
 		{
 			multiplex = new Multiplex();
 			
-			List<Show> shows = multiplex.getWeekProgramFilters().get(0).filter(multiplex.getWeekProgram().getShows());
+			List<Show> shows = multiplex.getProgramFormatter("ForHall").filter(multiplex.getShows());
 			Show show = shows.get(0);
 			System.out.println(show);
 			
-			show.setStateSeat(1, StateReservableSeat.Reserved);
+			//show.setStateSeat(1, StateReservableSeat.Reserved);
 			
 			List<StateReservableSeat> seats = show.getReservableSeats();
 			for(StateReservableSeat state : seats) {
@@ -52,26 +54,16 @@ public class TestWindow extends JFrame{
 		}
 		else
 		{
-			ObjectInputStream input;
-			try {
-				input = new ObjectInputStream(new FileInputStream(file));
-				multiplex = (Multiplex) input.readObject();
-				input.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
+			multiplex = archive.load();
 		}
 		
-//		List<Show> showForFilm1 = multiplex.getWeekProgram().filterShowForCriterion(multiplex.getWeekProgramFilters().get(0));
-		List<Show> showForFilm1 = multiplex.getWeekProgram().getShows();
+		List<Show> showForFilm1 = multiplex.getShows();
 		for(Show s : showForFilm1) {
 			System.out.println(s);
 		}
 		
 		try {
-			List<Show> shows = multiplex.getWeekProgram().getShows();
+			List<Show> shows = multiplex.getShows();
 			Show show = shows.get(0);
 			multiplex.getTicketOffice().buyTicket(idClient, show, 1);
 			
@@ -82,9 +74,9 @@ public class TestWindow extends JFrame{
 		}
 		
 		try {
-			List<Show> shows = multiplex.getWeekProgram().getShows();
+			List<Show> shows = multiplex.getShows();
 			Show show = shows.get(0);
-			multiplex.getReservationHandler().createReservation(idClient, show, 1);
+			multiplex.getReservationHandler().createReservation(idClient, show, 2);
 		} catch (SeatNotAvailable e) {
 			e.printStackTrace();
 		} catch (SeatAlreadyTaken e) {
@@ -93,10 +85,7 @@ public class TestWindow extends JFrame{
     	
     	
     	
-    	Window window = new Window(multiplex);
-    	
-    	JPanel rightPanel = new JPanel();
-    	JPanel leftPanel = new JPanel();
+    	Window window = new Window(multiplex, archive);
     	
 //////    	//TEST HALLVIEW
 //		List<Show> shows = multiplex.getWeekProgram().filterShowForCriterion((s) -> true);

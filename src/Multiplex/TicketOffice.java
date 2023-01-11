@@ -34,6 +34,14 @@ public class TicketOffice implements Serializable {
 		return discounts;
 	}
 	
+	public void activeDiscount(int number) {
+		discounts.get(number).activate();
+	}
+	
+	public void deactivateDiscount(int number) {
+		discounts.get(number).deActivate();
+	}
+	
 	/**
 	 * Buy a ticket without reservation for a client
 	 * @param idClient is the id of the client that want to buy the ticket
@@ -50,7 +58,7 @@ public class TicketOffice implements Serializable {
 		if(! show.getStateSeat(numberOfSeat).equals(StateReservableSeat.Free))
 			throw new SeatAlreadyTaken();
 		
-		Ticket ticket = new Ticket(selectMinPrice(show), show, idClient);
+		Ticket ticket = new Ticket(selectMinPrice(show), idClient, show.getFilm(), show.getDate());
 		tickets.add(ticket);
 		
 		show.setStateSeat(numberOfSeat, StateReservableSeat.Sold);
@@ -62,7 +70,7 @@ public class TicketOffice implements Serializable {
 	 * @param reservation is the reservation effetuated from the client
 	 */
 	public void buyTicketWithReservation(Reservation reservation) {
-		Ticket ticket = new Ticket(selectMinPrice(reservation.getShow()), reservation.getShow(), reservation.getIdClient());
+		Ticket ticket = new Ticket(selectMinPrice(reservation.getShow()), reservation.getIdClient(), reservation.getShow().getFilm(), reservation.getShow().getDate());
 		tickets.add(ticket);
 	}
 	
@@ -78,7 +86,7 @@ public class TicketOffice implements Serializable {
 	 * @return the revenue of this week for the show that projected a film
 	 */
 	public double computeRevenueOfFilm(final String film) {
-		return tickets.stream().filter(t -> t.getShow().getFilm() == film).mapToDouble(t -> t.getEffectivePrice()).sum();
+		return tickets.stream().filter(t -> t.getFilm() == film).mapToDouble(t -> t.getEffectivePrice()).sum();
 	}
 	
 	/**

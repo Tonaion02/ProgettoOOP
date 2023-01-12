@@ -44,14 +44,14 @@ public abstract class Discount implements Serializable {
 	/**
 	 * Set to active the discount
 	 */
-	public void activate() {
+	protected void activate() {
 		this.active = true;
 	}
 	
 	/**
 	 * Set to inactive the discount
 	 */
-	public void deActivate() {
+	protected void deActivate() {
 		this.active = false;
 	}
 	

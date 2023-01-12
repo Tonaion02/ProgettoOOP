@@ -17,7 +17,6 @@ public class Hall implements Serializable {
 	public Hall(int numberOfHall, int numberOfSeats, int numberOfSeatsH) {
 		this.numberOfHall = numberOfHall;
 		this.numberOfSeatsH = numberOfSeatsH;
-		System.out.println(this.numberOfSeatsH);
 		
 		this.seats = new ArrayList<>();
 		for(int i = 0;i < numberOfSeats;i++) {

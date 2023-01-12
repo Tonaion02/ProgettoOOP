@@ -10,15 +10,19 @@ import java.time.LocalDateTime;
 import javax.swing.*;
 
 import Multiplex.Archive;
+import Multiplex.ModClient;
+import Multiplex.ModHandler;
 import Multiplex.Multiplex;
 
 public class Window extends JFrame {
 	private static final long serialVersionUID = -897675181702202733L;
 	
-	public Window(Multiplex multiplex, Archive archive) {
+	public Window(Multiplex multiplex, Archive archive, ModClient modClient, ModHandler modHandler) {
 		//Common part
 		this.multiplex = multiplex;
 		this.archive = archive;
+		this.modClient = modClient;
+		this.modHandler = modHandler;
 		
 		//Common part
 		
@@ -87,7 +91,17 @@ public class Window extends JFrame {
 		return multiplex;
 	}
 	
+	public ModClient getModClient() {
+		return modClient;
+	}
+	
+	public ModHandler getModHandler() {
+		return modHandler;
+	}
+	
 	private State currentState;
 	private Multiplex multiplex;
-	private Archive archive; 
+	private Archive archive;
+	private ModClient modClient;
+	private ModHandler modHandler;
 }

@@ -20,11 +20,13 @@ public class ClientState extends State {
 		
 		State programVisualizer = new ProgramVisualizer(this.window);
 		State reservationState = new ReservationState(this.window);
+		State newReservation = new NewReservation(this.window);
 		
-		JMenuBar menuBar = createClientMenuBar(programVisualizer, reservationState, null, null);
+		JMenuBar menuBar = createClientMenuBar(programVisualizer, reservationState, newReservation, null);
 		this.add(menuBar, BorderLayout.NORTH);
-		programVisualizer.add(createClientMenuBar(programVisualizer, reservationState, null, null), BorderLayout.NORTH);
-		reservationState.add(createClientMenuBar(programVisualizer, reservationState, null, null), BorderLayout.NORTH);
+		programVisualizer.add(createClientMenuBar(programVisualizer, reservationState, newReservation, null), BorderLayout.NORTH);
+		reservationState.add(createClientMenuBar(programVisualizer, reservationState, newReservation, null), BorderLayout.NORTH);
+		newReservation.add(createClientMenuBar(programVisualizer, reservationState, newReservation, null), BorderLayout.NORTH);
 		
 		//MAGARI VISUALIZZA PRENOTAZIONI E BIGLIETTI SOTTO
 	}

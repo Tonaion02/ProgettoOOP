@@ -1,8 +1,13 @@
 package Multiplex;
 
 import java.io.Serializable;
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+
+import Utility.Time;
 
 /**
  Class to generate and handle tickets of the Multiplex
@@ -50,12 +55,12 @@ public class TicketOffice implements Serializable {
 	 * @throws SeatNotAvailable 
 	 * @throws SeatAlreadyTaken 
 	 */
-	public void buyTicket(int idClient, Show show, int numberOfSeat) throws SeatNotAvailable, SeatAlreadyTaken {
+	public void generateTicket(int idClient, Show show, int numberOfSeat) throws SeatNotAvailable, SeatAlreadyTaken {
 		
 		if(show.getHall().getStateSeat(numberOfSeat).equals(StateSeat.Unavailable))
 			throw new SeatNotAvailable();
 		
-		if(! show.getStateSeat(numberOfSeat).equals(StateReservableSeat.Free))
+		if(show.getStateSeat(numberOfSeat).equals(StateReservableSeat.Sold))
 			throw new SeatAlreadyTaken();
 		
 		Ticket ticket = new Ticket(selectMinPrice(show), idClient, show.getFilm(), show.getDate());
@@ -65,20 +70,16 @@ public class TicketOffice implements Serializable {
 	}
 	
 	/**
-	 * Buy a ticket with a reservation
-	 * @param idClient is the id of the client that want to buy the ticket
-	 * @param reservation is the reservation effetuated from the client
-	 */
-	public void buyTicketWithReservation(Reservation reservation) {
-		Ticket ticket = new Ticket(selectMinPrice(reservation.getShow()), reservation.getIdClient(), reservation.getShow().getFilm(), reservation.getShow().getDate());
-		tickets.add(ticket);
-	}
-	
-	/**
 	 * @return the revenue of the week
 	 */
 	public double computeRevenueOfWeek() {
-		return tickets.stream().mapToDouble(t -> t.getEffectivePrice()).sum();
+		int diff = Time.getCurrentTime().getDayOfWeek().compareTo(DayOfWeek.MONDAY);
+		System.out.println(diff);
+		LocalDateTime startOfWeek = Time.getCurrentTime().truncatedTo(ChronoUnit.DAYS).minusDays(diff);
+		diff = Time.getCurrentTime().getDayOfWeek().compareTo(DayOfWeek.SUNDAY);
+		LocalDateTime endOfWeek = Time.getCurrentTime().truncatedTo(ChronoUnit.DAYS).plusDays(-diff);
+		
+		return tickets.stream().filter(t -> t.getDate().compareTo(startOfWeek) >= 0 && t.getDate().compareTo(endOfWeek) <= 0).mapToDouble(t -> t.getEffectivePrice()).sum();
 	}
 	
 	/**

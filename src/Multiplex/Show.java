@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
 
 /**
  * The class rappresent the show concept
@@ -43,7 +42,7 @@ public class Show implements Serializable {
 	 * Set the full price of the ticket
 	 * @param fullPriceTicket the full price of the ticket
 	 */
-	public void setFullPriceTicket(double fullPriceTicket) {
+	protected void setFullPriceTicket(double fullPriceTicket) {
 		this.fullPriceTicket = fullPriceTicket;
 	}
 	
@@ -84,7 +83,7 @@ public class Show implements Serializable {
 	 * @param numberOfSeat the identifier of a seat
 	 * @param state the state that we want to set for the seat
 	 */
-	public void setStateSeat(int numberOfSeat, StateReservableSeat state) {
+	protected void setStateSeat(int numberOfSeat, StateReservableSeat state) {
 		this.reservableSeats.set(numberOfSeat, state);
 	}
 

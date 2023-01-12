@@ -21,6 +21,8 @@ import java.util.function.Function;
 import javax.swing.*;
 
 import Multiplex.Archive;
+import Multiplex.ModClient;
+import Multiplex.ModHandler;
 import Multiplex.Multiplex;
 import Multiplex.SeatAlreadyTaken;
 import Multiplex.SeatNotAvailable;
@@ -57,6 +59,13 @@ public class TestWindow extends JFrame{
 			multiplex = archive.load();
 		}
 		
+		
+		
+    	ModClient modClient = new ModClient(multiplex);
+    	ModHandler modHandler = new ModHandler(multiplex);
+		
+		
+    	
 		List<Show> showForFilm1 = multiplex.getShows();
 		for(Show s : showForFilm1) {
 			System.out.println(s);
@@ -65,7 +74,8 @@ public class TestWindow extends JFrame{
 		try {
 			List<Show> shows = multiplex.getShows();
 			Show show = shows.get(0);
-			multiplex.getTicketOffice().buyTicket(idClient, show, 1);
+			//multiplex.getTicketOffice().buyTicket(idClient, show, 1);
+			modClient.buyTicket(show, 1);
 			
 		} catch (SeatNotAvailable e) {
 			e.printStackTrace();
@@ -81,11 +91,9 @@ public class TestWindow extends JFrame{
 			e.printStackTrace();
 		} catch (SeatAlreadyTaken e) {
 			e.printStackTrace();
-		}	
+		}
     	
-    	
-    	
-    	Window window = new Window(multiplex, archive);
+    	Window window = new Window(multiplex, archive, modClient, modHandler);
     	
 //////    	//TEST HALLVIEW
 //		List<Show> shows = multiplex.getWeekProgram().filterShowForCriterion((s) -> true);
@@ -101,28 +109,7 @@ public class TestWindow extends JFrame{
 //		window.add(new JScrollPane(listerShow));
 		//TEST LISTERSELECTABLE
 		
-    	class EmptyState extends State {
-
-			public EmptyState(Window window) {
-				super(window);
-				
-				this.add(new JLabel("WEWE"));
-			}
-
-			@Override
-			public void load() {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void unLoad() {
-				// TODO Auto-generated method stub
-				
-			}
-    		
-    	}
-		StateSelectMode stateSelectMode = new StateSelectMode(window, new ClientState(window), new EmptyState(window));
+		StateSelectMode stateSelectMode = new StateSelectMode(window, new ClientState(window), new HandlerState(window));
 		window.loadState(stateSelectMode);
 		
 		try {

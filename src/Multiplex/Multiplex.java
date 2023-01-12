@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import Utility.Time;
@@ -33,22 +34,10 @@ public class Multiplex implements Serializable{
 		
 		shows = new ArrayList<>();
 		shows.add(new Show("Show1", "Film1", 24.0f, this.getHall(0), Time.getCurrentTime().plusDays(5)));
-		shows.add(new Show("Show2", "Film3", 24.0f, this.getHall(1), Time.getCurrentTime()));
-		shows.add(new Show("Show3", "Film1", 24.0f, this.getHall(0), Time.getCurrentTime()));
-		
-//		programFormatters = new ArrayList<>();
-//		programFormatters.add(new ProgramFormatter() {
-//			private static final long serialVersionUID = 2706478179287181612L;
-//
-//			@Override
-//			public List<Show> filter(List<Show> shows) {
-//				Function<? super Show, ? extends Integer> f = (s) -> {return s.getHall().getNumberOfHall();};
-//				Map<Integer, List<Show>> grouping = shows.stream().collect(Collectors.groupingBy(f));
-//				List<Show> l = grouping.entrySet().stream().map((e) -> e.getValue()).flatMap((list) -> list.stream()).toList();
-//				return l;
-//			}
-//		});
+		shows.add(new Show("Show2", "Film3", 10.0f, this.getHall(1), Time.getCurrentTime()));
+		shows.add(new Show("Show3", "Film1", 15.0f, this.getHall(0), Time.getCurrentTime()));
 
+		//PROGRAM FORMATTERS
 		programFormatters = new HashMap<>();
 		programFormatters.put("ForHall", new ProgramFormatter() {
 			private static final long serialVersionUID = 2706478179287181612L;
@@ -61,6 +50,40 @@ public class Multiplex implements Serializable{
 				return l;
 			}
 		});
+		
+//		Predicate<Show> notStarted = (s) -> { return Time.getCurrentTime().compareTo(s.getDate()) > 0; };
+		Predicate<Show> notStarted = (s) -> { return true; };
+		
+		class ProgramForChrono implements ProgramFormatter {
+			private static final long serialVersionUID = 7474872505841523848L;
+
+			@Override
+			public List<Show> filter(List<Show> shows) {
+				return shows.stream().filter(notStarted).sorted((s1, s2) -> s1.getDate().compareTo(s2.getDate())).toList();
+			}
+		}
+		programFormatters.put("SortChrono", new ProgramForChrono());
+		
+		class ProgramForNumberOfHall implements ProgramFormatter {
+			private static final long serialVersionUID = 4839808637396740734L;
+
+			@Override
+			public List<Show> filter(List<Show> shows) {
+				return shows.stream().filter(notStarted).sorted((s1, s2) -> s1.getHall().getNumberOfHall() - s2.getHall().getNumberOfHall()).toList();
+			}
+		}
+		programFormatters.put("SortHall", new ProgramForNumberOfHall());
+		
+		class ProgramForTitle implements ProgramFormatter {
+			private static final long serialVersionUID = 7871426889029387565L;
+
+			@Override
+			public List<Show> filter(List<Show> shows) {
+				return shows.stream().filter(notStarted).sorted((s1, s2) -> s1.getTitle().compareTo(s2.getTitle())).toList();
+			}
+		}
+		programFormatters.put("SortTitle", new ProgramForTitle());
+		//PROGRAM FORMATTERS
 		
 		ticketOffice = new TicketOffice();
 		
@@ -93,9 +116,19 @@ public class Multiplex implements Serializable{
 		return shows;
 	}
 	
-	public void insertIntoProgram(Show s) {
+	public void insertIntoProgram(String title, String film, double price, int nHall, LocalDateTime date) throws Exception {
+		Hall h = getHall(nHall);
+		if(h == null)
+			throw new Exception("Sala non trovata");
+		Show s = new Show(title, film, price, h, date);
 		shows.add(s);
 	}
+	
+	//TO IMPROVE
+//	public List<Show> getShows(String nameProgramFormatter) {
+//		ProgramFormatter p = programFormatters.get(nameProgramFormatter);
+//		return p.filter(shows)
+//	}
 	
 	public Map<String, ProgramFormatter> getProgramFormatters() {
 		return programFormatters;

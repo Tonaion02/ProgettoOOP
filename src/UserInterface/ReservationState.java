@@ -3,11 +3,14 @@ package UserInterface;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.function.Function;
 
 import javax.swing.*;
 
 import Multiplex.Multiplex;
 import Multiplex.Reservation;
+import Multiplex.SeatAlreadyTaken;
+import Multiplex.SeatNotAvailable;
 
 public class ReservationState extends State {
 	private static final long serialVersionUID = 508171322486247738L;
@@ -15,12 +18,8 @@ public class ReservationState extends State {
 	public ReservationState(Window window) {
 		super(window);
 		
-		//#TEMPORARY
-		int idClient = 0;
-		//#TEMPORARY
-		
 		Multiplex multiplex = window.getMultiplex();
-		reservations = new ListerSelectable<>(null);
+		reservations = new ListerSelectable<>(null, null);
 		this.add(new JScrollPane(reservations));
 		
 		JPanel southPanel = new JPanel();
@@ -34,10 +33,16 @@ public class ReservationState extends State {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					multiplex.getTicketOffice().buyTicketWithReservation(reservations.getSelected());
+					//multiplex.getTicketOffice().buyTicketWithReservation(reservations.getSelected());
+					window.getModClient().buyTicketWithReservation(reservations.getSelected());
 					reservations.unSelect();
 				} catch (NotSelectedItemException e1) {
 					JOptionPane.showMessageDialog(ReservationState.this.window, "Non hai selezionato nessuna prenotazione");
+				} catch (SeatNotAvailable e1) {
+					//JOptionPane.showMessageDialog(ReservationState.this.window, "");
+					e1.printStackTrace();
+				} catch (SeatAlreadyTaken e1) {
+					e1.printStackTrace();
 				}
 			}
 			
@@ -70,8 +75,10 @@ public class ReservationState extends State {
 	@Override
 	public void load() {
 		Multiplex multiplex = window.getMultiplex();
-		multiplex.getReservationHandler().getReservations().stream().forEach(System.out::println);
-		reservations.setSetOfOptions(multiplex.getReservationHandler().getReservations());
+		Function<Reservation, String> format = (s) -> {
+			return "Cliente: " + s.getIdClient() + " for show: " + s.getShow().getTitle();
+		};
+		reservations.setSetOfOptions(multiplex.getReservationHandler().getReservations(), format);
 	}
 
 	@Override

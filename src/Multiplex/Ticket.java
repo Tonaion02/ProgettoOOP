@@ -3,7 +3,7 @@ package Multiplex;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class Ticket implements Serializable {
+public final class Ticket implements Serializable {
 	private static final long serialVersionUID = 572478323850917103L;
 	/**
 	 * Constructs Ticket from effectivePrice, idClient and the show

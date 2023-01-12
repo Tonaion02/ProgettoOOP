@@ -40,12 +40,16 @@ public class ProgramVisualizer extends State {
 	public ProgramVisualizer(Window window) {
 		super(window);
 
+		JPanel principlePanel = new JPanel();
+		principlePanel.setLayout(new BorderLayout());;
+		this.add(principlePanel);
+		
 		area = new JTextArea();
 		JScrollPane scroll = new JScrollPane(area);
-		this.add(scroll);
+		principlePanel.add(scroll);
 		
 		JPanel northPanel = new JPanel();
-		this.add(northPanel, BorderLayout.NORTH);
+		principlePanel.add(northPanel, BorderLayout.NORTH);
 		
 		group = new ButtonGroup();
 		
@@ -81,10 +85,25 @@ public class ProgramVisualizer extends State {
 		selectedFilter = window.getMultiplex().getProgramFormatter("ForWeek");
 		programForWeek.addActionListener(new LoadOnPress(window.getMultiplex().getProgramFormatter("ForWeek")));
 		
-		JRadioButton programForHall = new JRadioButton("Programma per sale");
+		JRadioButton programForHall = new JRadioButton("Per sala");
 		northPanel.add(programForHall);
 		group.add(programForHall);
 		programForHall.addActionListener(new LoadOnPress(window.getMultiplex().getProgramFormatter("ForHall")));
+		
+		JRadioButton programForChrono = new JRadioButton("Cronologicamente");
+		northPanel.add(programForChrono);
+		group.add(programForChrono);
+		programForChrono.addActionListener(new LoadOnPress(window.getMultiplex().getProgramFormatter("SortChrono")));
+		
+		JRadioButton programForNHall = new JRadioButton("Per numero sala");
+		northPanel.add(programForNHall);
+		group.add(programForNHall);
+		programForNHall.addActionListener(new LoadOnPress(window.getMultiplex().getProgramFormatter("SortHall")));
+		
+		JRadioButton programForTitle = new JRadioButton("Per titolo");
+		northPanel.add(programForTitle);
+		group.add(programForTitle);
+		programForTitle.addActionListener(new LoadOnPress(window.getMultiplex().getProgramFormatter("SortTitle")));
 	}
 	
 	private void printShows(ProgramFormatter filter) {

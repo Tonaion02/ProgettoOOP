@@ -22,5 +22,15 @@ public class ModHandler {
 		show.setFullPriceTicket(newPrice);
 	}
 	
+	public String reportShow() {
+		StringBuilder result = new StringBuilder("");
+		
+		result.append("Report spettacoli: \n");
+		for(Show s : multiplex.getShows())
+			result.append(s.getTitle() + ": " + s.freeSeat() + "\n");
+		
+		return result.toString();
+	}
+	
 	private Multiplex multiplex;
 }

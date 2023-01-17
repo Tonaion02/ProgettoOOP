@@ -6,11 +6,14 @@ import java.time.format.DateTimeFormatter;
 
 import javax.swing.*;
 
-public class ClientState extends State {
+import Multiplex.ModClient;
+import UserInterface.State.ClientState;
+
+public class ClientModState extends ClientState {
 	private static final long serialVersionUID = 3823221456257949538L;
 
-	public ClientState(Window window) {
-		super(window);
+	public ClientModState(Window window, ModClient modClient) {
+		super(window, modClient);
 		
 		LocalDateTime local = LocalDateTime.now();
 		DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
@@ -18,9 +21,9 @@ public class ClientState extends State {
 		System.out.println(myFormatObj.format(local));
 		System.out.println(myFormatObj.format(local.minusHours(12)));
 		
-		State programVisualizer = new ProgramVisualizer(this.window);
-		State reservationState = new ReservationState(this.window);
-		State newReservation = new NewReservation(this.window);
+		State programVisualizer = new ProgramVisualizer(this.window, modClient);
+		State reservationState = new ReservationState(this.window, modClient);
+		State newReservation = new NewReservation(this.window, modClient);
 		
 		JMenuBar menuBar = createClientMenuBar(programVisualizer, reservationState, newReservation, null);
 		this.add(menuBar, BorderLayout.NORTH);

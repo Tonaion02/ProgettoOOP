@@ -103,6 +103,10 @@ public class Show implements Serializable {
 	public Hall getHall() {
 		return hall;
 	}
+	
+	public int freeSeat() {
+		return (int)reservableSeats.stream().filter(s -> s == StateReservableSeat.Free).count();
+	}
 
 	private String film;
 	private double fullPriceTicket;

@@ -5,7 +5,9 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import Utility.Time;
 
@@ -20,42 +22,50 @@ public class TicketOffice implements Serializable {
 	public TicketOffice() {
 		tickets = new ArrayList<>();
 		
-		discounts = new ArrayList<>();
+		discounts = new HashMap<>();
+		activeDiscounts = new ArrayList<>();
 	}
 	
-	/**
-	 * Add a discount to the list of the discount 
-	 * @param discount is the discount that we want to add to the list of possible discounts
-	 */
-	public void addDiscount(Discount discount) {
-		discounts.add(discount);
+	public void addDiscount(String name, Discount discount) {
+		discounts.put(name, discount);
+	}
+
+	public void activeDiscount(String name) {
+		Discount discount = discounts.get(name);
+		activeDiscounts.add(discount);
 	}
 	
-	/**
-	 * Return the list of possible discounts
-	 * @return return list of discounts
-	 */
-	public List<Discount> getDiscounts() {
-		return discounts;
+	public void deActiveDiscount(String name) {
+		Discount discount = discounts.get(name);
+		activeDiscounts.remove(discount);
 	}
 	
-	public void activeDiscount(int number) {
-		discounts.get(number).activate();
+	public boolean isActiveDiscount(String name) {
+		Discount discount = discounts.get(name);
+		boolean active = false;
+		for(Discount d : activeDiscounts)
+			if(d == discount)
+			{
+				active = true;
+				break;
+			}
+		
+		return active;
 	}
 	
-	public void deactivateDiscount(int number) {
-		discounts.get(number).deActivate();
+	public List<String> getDiscountsIdentifiers() {
+		return discounts.entrySet().stream().map(e -> e.getKey()).toList();
 	}
 	
 	/**
 	 * Buy a ticket without reservation for a client
-	 * @param idClient is the id of the client that want to buy the ticket
+	 * @param idClient
 	 * @param show is the show for we want to buy the ticket
 	 * @param number of seat thaw we want to seat
 	 * @throws SeatNotAvailable 
 	 * @throws SeatAlreadyTaken 
 	 */
-	public void generateTicket(int idClient, Show show, int numberOfSeat) throws SeatNotAvailable, SeatAlreadyTaken {
+	public void generateTicket(Client client, Show show, int numberOfSeat) throws SeatNotAvailable, SeatAlreadyTaken {
 		
 		if(show.getHall().getStateSeat(numberOfSeat).equals(StateSeat.Unavailable))
 			throw new SeatNotAvailable();
@@ -63,7 +73,7 @@ public class TicketOffice implements Serializable {
 		if(show.getStateSeat(numberOfSeat).equals(StateReservableSeat.Sold))
 			throw new SeatAlreadyTaken();
 		
-		Ticket ticket = new Ticket(selectMinPrice(show), idClient, show.getFilm(), show.getDate());
+		Ticket ticket = new Ticket(selectMinPrice(client, show), client.getIdClient(), show.getFilm(), show.getDate());
 		tickets.add(ticket);
 		
 		show.setStateSeat(numberOfSeat, StateReservableSeat.Sold);
@@ -95,19 +105,21 @@ public class TicketOffice implements Serializable {
 	 * @param show that we want to calculate the minimum price
 	 * @return the minimum price for the ticket
 	 */
-	private double selectMinPrice(Show show) {
+	private double selectMinPrice(Client client, Show show) {
 		double minPrice = show.getFullPriceTicket();
-		for(Discount d : discounts) {
-			if(d.isActive()) {
-				double p = d.compute(show);
+		
+		for(Discount discount : activeDiscounts) {
+			if(discount.policy(client, show))
+			{
+				double p = discount.compute(show);
 				if(minPrice > p)
 					minPrice = p;	
 			}
 		}
-		
 		return minPrice;
 	}
 	
 	private List<Ticket> tickets;
-	private List<Discount> discounts;
+	private Map<String, Discount> discounts;
+	private List<Discount> activeDiscounts;
 }

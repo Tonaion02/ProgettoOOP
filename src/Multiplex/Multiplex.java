@@ -1,7 +1,9 @@
 package Multiplex;
 
 import java.io.Serializable;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -13,19 +15,11 @@ import java.util.stream.Collectors;
 
 import Utility.Time;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-
-/**
- * Class that rappresent the concept of Multiplex
- */
 public class Multiplex implements Serializable{
 	private static final long serialVersionUID = 3938796109326536459L;
 
 	public Multiplex() {
+		
 		films = Arrays.asList("Film1", "Film2", "Film3");
 		
 		halls = new ArrayList<>();
@@ -52,6 +46,7 @@ public class Multiplex implements Serializable{
 		});
 		
 //		Predicate<Show> notStarted = (s) -> { return Time.getCurrentTime().compareTo(s.getDate()) > 0; };
+		//#TO CHANGE
 		Predicate<Show> notStarted = (s) -> { return true; };
 		
 		class ProgramForChrono implements ProgramFormatter {
@@ -83,13 +78,62 @@ public class Multiplex implements Serializable{
 			}
 		}
 		programFormatters.put("SortTitle", new ProgramForTitle());
+		
+		
+		
+		class ProgramFilterForWeek implements ProgramFormatter {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public List<Show> filter(List<Show> shows) {
+				
+				List<Show> l = new ArrayList<>();
+				
+				for(Show s : shows) {
+					int diff = Time.getCurrentTime().getDayOfWeek().compareTo(DayOfWeek.MONDAY);
+					LocalDateTime startOfWeek = Time.getCurrentTime().truncatedTo(ChronoUnit.DAYS).minusDays(diff);
+					diff = Time.getCurrentTime().getDayOfWeek().compareTo(DayOfWeek.SUNDAY);
+					LocalDateTime endOfWeek = Time.getCurrentTime().truncatedTo(ChronoUnit.DAYS).plusDays(-diff);
+					
+					if(s.getDate().compareTo(startOfWeek) >= 0 && s.getDate().compareTo(endOfWeek) <= 0)
+						l.add(s);
+				}
+				
+				return l;
+			}
+
+		}
+		
+		programFormatters.put("ForWeek", new ProgramFilterForWeek());
 		//PROGRAM FORMATTERS
 		
 		ticketOffice = new TicketOffice();
 		
 		Discount discount = new DiscountForFilm(0.5f, "Film1");
-		discount.activate();
-		getTicketOffice().addDiscount(discount);
+		getTicketOffice().addDiscount("Discount1", discount);
+		getTicketOffice().activeDiscount("Discount1");
+		
+		discount = new Discount(0.4f) {
+			private static final long serialVersionUID = 6038731155203342629L;
+
+			@Override
+			public boolean policy(Client client, Show show) {
+				return client.getCategory() == "Category1";
+			}
+		};
+		getTicketOffice().addDiscount("Discount2", discount);
+		getTicketOffice().activeDiscount("Discount2");
+		
+		discount = new Discount(0.2f) {
+			private static final long serialVersionUID = -3252997687199444059L;
+
+			@Override
+			public boolean policy(Client client, Show show) {
+				return show.getDate().getDayOfWeek() == DayOfWeek.FRIDAY;
+			}
+		};
+		getTicketOffice().addDiscount("Discount3", discount);
+		getTicketOffice().activeDiscount("Discount3");
 		
 		reservationHandler = new ReservationHandler();
 	}
@@ -130,12 +174,19 @@ public class Multiplex implements Serializable{
 //		return p.filter(shows)
 //	}
 	
-	public Map<String, ProgramFormatter> getProgramFormatters() {
-		return programFormatters;
-	}
+//	public Map<String, ProgramFormatter> getProgramFormatters() {
+//		return programFormatters;
+//	}
+//	
+//	public ProgramFormatter getProgramFormatter(String identifier) {
+//		return programFormatters.get(identifier);
+//	}
 	
-	public ProgramFormatter getProgramFormatter(String identifier) {
-		return programFormatters.get(identifier);
+	public List<String> formatProgram(String name) {
+		ProgramFormatter formatter = programFormatters.get(name);
+		List<Show> showsToFormat = formatter.filter(shows);
+		List<String> showsFormatted = formatter.format(showsToFormat);
+		return showsFormatted;
 	}
 	
 	public TicketOffice getTicketOffice() {

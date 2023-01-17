@@ -3,13 +3,17 @@ package UserInterface;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.*;
 
+import Multiplex.ModClient;
+import Multiplex.ModHandler;
 import Multiplex.Multiplex;
 import Multiplex.Show;
+import UserInterface.State.HandlerState;
 
-public class HandlerState extends State {
+public class HandlerModState extends HandlerState {
 	private static final long serialVersionUID = -4660237638570072943L;
 	
 	public class ReportShowsState extends State {
@@ -18,17 +22,20 @@ public class HandlerState extends State {
 		public ReportShowsState(Window window) {
 			super(window);
 			
-			
+			area = new JTextArea();
+			area.setEditable(false);
+			this.add(new JScrollPane(area));
 		}
 
 		@Override
 		public void load() {
-			
+			area.setText(modHandler.reportShow());
 		}
 
 		@Override
 		public void unLoad() {}
 		
+		private JTextArea area;
 	}
 	
 	//TO WORK ON
@@ -58,7 +65,7 @@ public class HandlerState extends State {
 						Show show = lister.getSelected();
 						
 						Double p = Double.parseDouble(price.getText());
-						SetPriceState.this.window.getModHandler().setPriceShow(show, p);
+						modHandler.setPriceShow(show, p);
 						
 						price.setText("");
 						lister.unSelect();
@@ -100,7 +107,7 @@ public class HandlerState extends State {
 
 		@Override
 		public void load() {
-			area.setText(window.getModHandler().visualizeRevenue());
+			area.setText(modHandler.visualizeRevenue());
 		}
 
 		@Override
@@ -158,19 +165,21 @@ public class HandlerState extends State {
 		private JTextField nHall;
 	}
 
-	public HandlerState(Window window) {
-		super(window);
+	public HandlerModState(Window window, ModHandler modHandler) {
+		super(window, modHandler);
 		
 		State insert = new InsertShowState(window);
 		State revenue = new VisualizeRevenue(window);
 		State setPrice = new SetPriceState(window);
+		State reportShowState = new ReportShowsState(window);
 		
-		JMenuBar menuBar = createMenuBar(insert, revenue, setPrice);
+		JMenuBar menuBar = createMenuBar(insert, revenue, setPrice, reportShowState);
 		this.add(menuBar, BorderLayout.NORTH);
 		
-		insert.add(createMenuBar(insert, revenue, setPrice), BorderLayout.NORTH);
-		revenue.add(createMenuBar(insert, revenue, setPrice), BorderLayout.NORTH);
-		setPrice.add(createMenuBar(insert, revenue, setPrice), BorderLayout.NORTH);
+		insert.add(createMenuBar(insert, revenue, setPrice, reportShowState), BorderLayout.NORTH);
+		revenue.add(createMenuBar(insert, revenue, setPrice, reportShowState), BorderLayout.NORTH);
+		setPrice.add(createMenuBar(insert, revenue, setPrice, reportShowState), BorderLayout.NORTH);
+		reportShowState.add(createMenuBar(insert, revenue, setPrice, reportShowState), BorderLayout.NORTH);
 	}
 
 	@Override
@@ -183,16 +192,18 @@ public class HandlerState extends State {
 		
 	}
 	
-	private JMenuBar createMenuBar(State insert, State revenue, State setPrice) {
+	private JMenuBar createMenuBar(State insert, State revenue, State setPrice, State reportShows) {
 		JMenuBar menuBar = new JMenuBar();
 		
 		menuBar.add(new ChangePanelButton("Inserisci un nuovo show", window, insert));
 		menuBar.add(new ChangePanelButton("Fissa prezzo spettacolo", window, setPrice));
 		menuBar.add(new ChangePanelButton("Sconti", window, null));
-		menuBar.add(new ChangePanelButton("Spettacoli", window, null));
+		menuBar.add(new ChangePanelButton("Spettacoli", window, reportShows));
 		menuBar.add(new ChangePanelButton("Incasso", window, revenue));
 		menuBar.add(new ChangePanelButton("Posti", window, null));
 		
 		return menuBar;
 	}
+	
+	private ModHandler modHandler;
 }

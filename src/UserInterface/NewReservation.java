@@ -6,18 +6,19 @@ import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
+import Multiplex.ModClient;
 import Multiplex.Multiplex;
 import Multiplex.SeatAlreadyTaken;
 import Multiplex.SeatNotAvailable;
 import Multiplex.Show;
+import UserInterface.BasicHallView.HallViewClient;
+import UserInterface.State.ClientState;
 
-public class NewReservation extends State{
+public class NewReservation extends ClientState{
 	private static final long serialVersionUID = -7769269642035089448L;
 
-	public NewReservation(Window window) {
-		super(window);
-		
-		int idClient = 0;
+	public NewReservation(Window window, ModClient modClient) {
+		super(window, modClient);
 		
 		Multiplex multiplex = window.getMultiplex();
 		
@@ -41,7 +42,7 @@ public class NewReservation extends State{
 				}
 				
 				Show showToPass = selectedShow;
-				HallView2 hallView = new HallView2(selectedShow, window);
+				HallViewClient hallView = new HallViewClient(selectedShow, window);
 				NewReservation.this.add(hallView);
 				JButton prenota = new JButton("Prenota");
 				NewReservation.this.add( prenota, BorderLayout.SOUTH);
@@ -50,7 +51,7 @@ public class NewReservation extends State{
 					@Override
 					public void actionPerformed(ActionEvent e) {						
 						try {
-							multiplex.getReservationHandler().createReservation(idClient, showToPass, hallView.getSelectedSeat());
+							modClient.takeReservation(showToPass, hallView.getSelectedSeat());
 						} catch (SeatNotAvailable e1) {
 							JOptionPane.showMessageDialog(window, "Posto non disponibile");
 							return;

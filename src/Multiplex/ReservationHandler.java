@@ -26,7 +26,7 @@ public class ReservationHandler implements Serializable {
 	 * @throws SeatNotAvailable 
 	 * @throws SeatAlreadyTaken 
 	 */
-	public void createReservation(int idClient, Show show, int numberOfSeat) throws SeatNotAvailable, SeatAlreadyTaken {
+	public void createReservation(Client client, Show show, int numberOfSeat) throws SeatNotAvailable, SeatAlreadyTaken {
 		
 		if(show.getHall().getStateSeat(numberOfSeat).equals(StateSeat.Unavailable))
 			throw new SeatNotAvailable();
@@ -34,7 +34,7 @@ public class ReservationHandler implements Serializable {
 		if(! show.getStateSeat(numberOfSeat).equals(StateReservableSeat.Free))
 			throw new SeatAlreadyTaken();
 		
-		Reservation reservation = new Reservation(idClient, show, numberOfSeat);
+		Reservation reservation = new Reservation(client, show, numberOfSeat);
 		reservations.add(reservation);
 
 		show.setStateSeat(numberOfSeat, StateReservableSeat.Reserved);

@@ -10,22 +10,18 @@ public class Reservation implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/**
 	 * Constructs a reservation from 
-	 * @param idClient id of the client that created the reservation
+	 * @param 
 	 * @param show of 
 	 * @param numberOfSeat number that represent the seat
 	 */
-	public Reservation(int idClient, Show show, int numberOfSeat) {
-		this.idClient = idClient;
+	public Reservation(Client client, Show show, int numberOfSeat) {
+		this.client = client;
 		this.show = show;
 		this.numberOfSeat = numberOfSeat;
 	}
 	
-	/**
-	 * Get the id of the Client
-	 * @return the id of the Client
-	 */
-	public int getIdClient() {
-		return idClient;
+	public Client getClient() {
+		return client;
 	}
 	
 	/**
@@ -54,6 +50,6 @@ public class Reservation implements Serializable {
 	}
 
 	private int numberOfSeat;
-	private int idClient;
+	private Client client;
 	private Show show;
 }

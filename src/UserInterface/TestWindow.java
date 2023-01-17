@@ -21,6 +21,7 @@ import java.util.function.Function;
 import javax.swing.*;
 
 import Multiplex.Archive;
+import Multiplex.Client;
 import Multiplex.ModClient;
 import Multiplex.ModHandler;
 import Multiplex.Multiplex;
@@ -33,7 +34,6 @@ public class TestWindow extends JFrame{
 	private static final long serialVersionUID = 618549544185941581L;
 
 	public static void main(String[] args) {  
-		int idClient = 0;
 		
 		Multiplex multiplex = null;
 		File file = new File("data/Multiplex.dat");
@@ -42,26 +42,15 @@ public class TestWindow extends JFrame{
 		if(!file.exists() || true)
 		{
 			multiplex = new Multiplex();
-			
-			List<Show> shows = multiplex.getProgramFormatter("ForHall").filter(multiplex.getShows());
-			Show show = shows.get(0);
-			System.out.println(show);
-			
-			//show.setStateSeat(1, StateReservableSeat.Reserved);
-			
-			List<StateReservableSeat> seats = show.getReservableSeats();
-			for(StateReservableSeat state : seats) {
-				System.out.println(state);
-			}
 		}
 		else
 		{
 			multiplex = archive.load();
 		}
 		
-		
-		
+		Client client = new Client(10, "Categoria1");
     	ModClient modClient = new ModClient(multiplex);
+    	modClient.selectClient(client);
     	ModHandler modHandler = new ModHandler(multiplex);
 		
 		
@@ -86,14 +75,15 @@ public class TestWindow extends JFrame{
 		try {
 			List<Show> shows = multiplex.getShows();
 			Show show = shows.get(0);
-			multiplex.getReservationHandler().createReservation(idClient, show, 2);
+			//multiplex.getReservationHandler().createReservation(idClient, show, 2);
+			modClient.takeReservation(show, 2);
 		} catch (SeatNotAvailable e) {
 			e.printStackTrace();
 		} catch (SeatAlreadyTaken e) {
 			e.printStackTrace();
 		}
     	
-    	Window window = new Window(multiplex, archive, modClient, modHandler);
+    	Window window = new Window(multiplex, archive);
     	
 //////    	//TEST HALLVIEW
 //		List<Show> shows = multiplex.getWeekProgram().filterShowForCriterion((s) -> true);
@@ -109,7 +99,7 @@ public class TestWindow extends JFrame{
 //		window.add(new JScrollPane(listerShow));
 		//TEST LISTERSELECTABLE
 		
-		StateSelectMode stateSelectMode = new StateSelectMode(window, new ClientState(window), new HandlerState(window));
+		StateSelectMode stateSelectMode = new StateSelectMode(window, new ClientModState(window, modClient), new HandlerModState(window, modHandler));
 		window.loadState(stateSelectMode);
 		
 		try {

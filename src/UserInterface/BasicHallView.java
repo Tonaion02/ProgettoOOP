@@ -14,16 +14,109 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
-import Multiplex.SeatAlreadyTaken;
-import Multiplex.SeatNotAvailable;
+import Multiplex.Hall;
 import Multiplex.Show;
 import Multiplex.StateReservableSeat;
 import Multiplex.StateSeat;
 
-public class HallView2 extends JComponent {
+public abstract class BasicHallView extends JComponent {
 	private static final long serialVersionUID = 4840182416182552680L;
+	
 
-	public static class SeatView extends Rectangle {
+	public static class HallViewClient extends BasicHallView {
+		private static final long serialVersionUID = -2518365984078708971L;
+
+		public HallViewClient(Show show, Window window) {
+			super(window, show.getHall().getNumberOfHall());
+			
+			int x = 0, y = 0;
+			int w = 40, h = 40;
+			int padX = 5, padY = 5;
+			
+			List<StateReservableSeat> rSeats = show.getReservableSeats();
+			
+			for(int i=0;i<rSeats.size();i++) {
+				
+				//Compute position of the seat
+				y = (i / show.getHall().getNumberOfSeatsH()) * (h + padY);
+				
+				if(i % show.getHall().getNumberOfSeatsH() == 0)
+					x = 0;
+				
+				SeatView s = new SeatView(x, y, w, h, i);
+				x += w + padX;
+				//Compute position of the seat
+				
+				seats.add(s);
+			}
+			
+			for(SeatView s : seats) {
+				
+				int i = s.getNumberOfSeat();
+				
+				//Set the correct color from the state of the seat
+				StateSeat state = show.getHall().getStateSeat(i);
+				if(state.equals(StateSeat.Unavailable))
+					s.setC(Color.gray);
+				else
+				{
+					StateReservableSeat stat = rSeats.get(i);
+					if(stat.equals(StateReservableSeat.Free))
+						s.setC(Color.green);
+					else if(stat.equals(StateReservableSeat.Sold))
+						s.setC(Color.red);
+					else if(stat.equals(StateReservableSeat.Reserved))
+						s.setC(Color.yellow);
+				}
+				//Set the correct color from the state of the seat
+			}
+		}
+	}
+	
+	public static class HallViewHandler extends BasicHallView {
+		private static final long serialVersionUID = 3154300639948559366L;
+
+		public HallViewHandler(Hall hall, Window window) {
+			super(window, hall.getNumberOfSeatsH());
+			
+			int x = 0, y = 0;
+			int w = 40, h = 40;
+			int padX = 5, padY = 5;
+			
+			int nSeats = hall.getNumberOfSeats();
+			
+			for(int i=0;i<nSeats;i++) {
+			
+				//Compute position of the seat
+				y = (i / numberOfSeatH) * (h + padY);
+			
+				if(i % numberOfSeatH == 0)
+					x = 0;
+			
+				SeatView s = new SeatView(x, y, w, h, i);
+				x += w + padX;
+				//Compute position of the seat
+			
+				seats.add(s);
+			}
+			
+			for(SeatView s : seats) {
+			
+				int i = s.getNumberOfSeat();
+			
+				//Set the correct color from the state of the seat
+				StateSeat state = hall.getStateSeat(i);
+				if(state.equals(StateSeat.Unavailable))
+					s.setC(Color.gray);
+				else
+					s.setC(Color.white);	
+				//Set the correct color from the state of the seat
+			}
+		}
+		
+	}
+	
+	public class SeatView extends Rectangle {
 		private static final long serialVersionUID = 8990313099653977739L;
 		
 		public SeatView(int x, int y, int w, int h, int numberOfSeat) {
@@ -40,7 +133,9 @@ public class HallView2 extends JComponent {
 			g.setColor(c);
 			g.fill(this);
 			g.setColor(Color.black);
-			g.drawString(Integer.toString(numberOfSeat), (int)(this.getX() + (this.getWidth() / 2)), (int)(this.getY() + (this.getHeight() / 2)));
+			g.drawString(Integer.toString(numberOfSeat), 
+					(int)(this.getX() + (this.getWidth() / 2)), 
+					(int)(this.getY() + (this.getHeight() / 2)));
 		}
 		
 		public void renderBorder(Graphics2D g, Color color) {
@@ -56,56 +151,13 @@ public class HallView2 extends JComponent {
 		private Color c = Color.BLACK;
 	}
 	
-	public HallView2(Show show, Window window) {	
-		this.show = show;
+	public BasicHallView(Window window, int numberOfSeatH) {	
 		this.window = window;
+		this.numberOfSeatH = numberOfSeatH;
 		
 		seats = new ArrayList<>();
-
-		int x = 0, y = 0;
-		int w = 40, h = 40;
-		int padX = 5, padY = 5;
 		
 		selectedSeat = null;
-		
-		List<StateReservableSeat> rSeats = show.getReservableSeats();
-		
-		for(int i=0;i<rSeats.size();i++) {
-			
-			//Compute position of the seat
-			y = (i / show.getHall().getNumberOfSeatsH()) * (h + padY);
-			
-			if(i % show.getHall().getNumberOfSeatsH() == 0)
-				x = 0;
-			
-			SeatView s = new SeatView(x, y, w, h, i);
-			x += w + padX;
-			//Compute position of the seat
-			
-			seats.add(s);
-		}
-		
-		for(SeatView s : seats) {
-			
-			int i = s.getNumberOfSeat();
-			
-			//Set the correct color from the state of the seat
-			StateSeat state = show.getHall().getStateSeat(i);
-			if(state.equals(StateSeat.Unavailable))
-				s.setC(Color.gray);
-			else
-			{
-				StateReservableSeat stat = rSeats.get(i);
-				if(stat.equals(StateReservableSeat.Free))
-					s.setC(Color.green);
-				else if(stat.equals(StateReservableSeat.Sold))
-					s.setC(Color.red);
-				else if(stat.equals(StateReservableSeat.Reserved))
-					s.setC(Color.yellow);
-			}
-			//Set the correct color from the state of the seat
-		}
-		
 		
 		this.addComponentListener(new ComponentListener() {
 			@Override
@@ -114,7 +166,6 @@ public class HallView2 extends JComponent {
 				try {
 					window.update();
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
 //					e1.printStackTrace();
 				}
 			}
@@ -138,21 +189,11 @@ public class HallView2 extends JComponent {
 			public void mousePressed(MouseEvent e) {
 				for(SeatView s : seats) {
 					if(s.contains(e.getPoint())) {
-//						System.out.println(s.getNumberOfSeat());
-//						try {
-//							action.execute(0, show, s.getNumberOfSeat());
-//							System.out.println(show.getStateSeat(0));
-//						} catch (SeatNotAvailable e1) {
-//							JOptionPane.showMessageDialog(window, e1.getMessage());
-//						} catch (SeatAlreadyTaken e1) {
-//							JOptionPane.showMessageDialog(window, e1.getMessage());
-//						}
 						
 						selectedSeat = s.getNumberOfSeat();
 						try {
 							window.update();
 						} catch (CurrentStateNotAvailable e1) {
-							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
 					}
@@ -175,7 +216,6 @@ public class HallView2 extends JComponent {
 		int w = 40, h = 40;
 		int padX = 5, padY = 5;
 		
-		int numberOfSeatH = show.getHall().getNumberOfSeatsH();
 		int numberOfSeatV = seats.size() / numberOfSeatH;
 		
 		int wImage = numberOfSeatH * (w + padX);
@@ -236,8 +276,8 @@ public class HallView2 extends JComponent {
 		return selectedSeat;
 	}
 	
-	private List<SeatView> seats;
-	private Show show;
+	protected List<SeatView> seats;
+	protected int numberOfSeatH;
 	@SuppressWarnings("unused")
 	private Window window;
 	

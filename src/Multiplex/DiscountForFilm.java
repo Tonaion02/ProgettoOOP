@@ -9,7 +9,7 @@ public class DiscountForFilm extends Discount {
 	}
 
 	@Override
-	public boolean policy(int idClient, Show show) {
+	public boolean policy(Client client, Show show) {
 		return show.getFilm().equals(film);
 	}
 	

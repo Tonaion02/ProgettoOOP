@@ -14,7 +14,6 @@ public abstract class Discount implements Serializable {
 	 */
 	public Discount(double percent) {
 		this.percent = percent;
-		this.active = true;
 	}
 	
 	/**
@@ -23,7 +22,7 @@ public abstract class Discount implements Serializable {
 	 * @param show is the show that we want to test
 	 * @return the result of the test if policy is applied
 	 */
-	public abstract boolean policy(int idClient, Show show);
+	public abstract boolean policy(Client client, Show show);
 	
 	/**
 	 * The method compute price of the ticket with the discount applied
@@ -41,28 +40,28 @@ public abstract class Discount implements Serializable {
 		return percent;
 	}
 	
-	/**
-	 * Set to active the discount
-	 */
-	protected void activate() {
-		this.active = true;
-	}
-	
-	/**
-	 * Set to inactive the discount
-	 */
-	protected void deActivate() {
-		this.active = false;
-	}
-	
-	/**
-	 * 
-	 * @return the current state of a discount
-	 */
-	public boolean isActive() {
-		return active;
-	}
-	
+//	/**
+//	 * Set to active the discount
+//	 */
+//	protected void activate() {
+//		this.active = true;
+//	}
+//	
+//	/**
+//	 * Set to inactive the discount
+//	 */
+//	protected void deActivate() {
+//		this.active = false;
+//	}
+//	
+//	/**
+//	 * 
+//	 * @return the current state of a discount
+//	 */
+//	public boolean isActive() {
+//		return active;
+//	}
+//	
+//	private boolean active;
 	private double percent;
-	private boolean active;
 }
